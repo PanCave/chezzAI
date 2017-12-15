@@ -107,10 +107,14 @@ public class ChezzAI {
 	static void printBoard() {
 		char[][] charBoard = convertBoardToCharArray();
 		String output;
-		output = "#################################################\n";
+		output = "  #################################################\n";
 		for(int row = 0; row < 8; row++) {
 			for(int smallRow = 0; smallRow < 4; smallRow++) {
-			output += "#";
+				if(smallRow == 1) {
+					output += 8 - row+" #";
+				} else {
+					output += "  #";
+				}
 				for(int column = 0; column < 8; column++) {
 					if(smallRow == 1) {
 						output += "  "+charBoard[7 - row][column]+"  #";
@@ -123,6 +127,7 @@ public class ChezzAI {
 				output += "\n";
 			}
 		}
+		output += "     A     B     C     D     E     F     G     H   \n";
 		System.out.println(output);
 	}
 	
