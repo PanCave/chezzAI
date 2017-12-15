@@ -9,7 +9,7 @@ import java.util.Scanner;
 import logic.Logic;
 
 public class ChezzAI {
-	
+
 	static String[] board = {
 			"rba8","nbb8","bbc8","qbd8","kbe8","bbf8","nbg8","rbh8",
 			"pba7","pbb7","pbc7","pbd7","pbe7","pbf7","pbg7","pbh7",
@@ -17,18 +17,18 @@ public class ChezzAI {
 			"rwa1","nwb1","bwc1","qwd1","kwe1","bwf1","nwg1","rwh1",
 			};
 	static String[] commentary;
-	
+
 	static Scanner scanner;
-	
+
 	static Random random;
-	
+
 	public static void main(String[] args) throws FileNotFoundException {
-		//String[] moves = Logic.getAllPossibleMoves(initialBoard);
+		//String[] moves = Logic.getAllPossibleMoves(board);
 		scanner = new Scanner(System.in);
 		random = new Random();
-		
+
 		loadCommentary("res/commentary_de.txt");
-		
+
 		System.out.println("Hallo,\ndies ist ein simpler Schachcomputer. Möchtest du ein Spiel spielen?");
 		switch(scanner.nextLine().toLowerCase()) {
 		case "ja":
@@ -40,7 +40,7 @@ public class ChezzAI {
 		case "n": System.out.println("Okay, vielleicht beim nächsten Mal. Tschüss!"); System.exit(0); break;
 		}
 	}
-	
+
 	static void startGame() {
 		boolean winner = false;
 		while(!winner) {
@@ -61,18 +61,21 @@ public class ChezzAI {
 					correctMove = false;
 				}
 			}
-			
+
 			// Computer am Zug
 			printBoard();
 			comment();
-			winner = true;
-		}		
+			//moves
+			//zufällig einen Zug daraus wählen
+			//processMove(move.split(" "));
+			//winner = true;
+		}
 	}
-	
+
 	static void comment() {
 		System.out.println(commentary[random.nextInt(100) % commentary.length]);
 	}
-	
+
 	static void loadCommentary(String filename) throws FileNotFoundException {
 		Scanner in = new Scanner(new FileReader(filename));
 		StringBuilder sb = new StringBuilder();
@@ -83,7 +86,7 @@ public class ChezzAI {
 		in.close();
 		commentary = sb.toString().split("___");
 	}
-	
+
 	static boolean processMove(String[] move) {
 		String p = " ";
 		switch(move[0].toLowerCase()) {
@@ -103,7 +106,7 @@ public class ChezzAI {
 		}
 		return successfulMove;
 	}
-	
+
 	static void printBoard() {
 		char[][] charBoard = convertBoardToCharArray();
 		String output;
@@ -130,7 +133,7 @@ public class ChezzAI {
 		output += "     A     B     C     D     E     F     G     H   \n";
 		System.out.println(output);
 	}
-	
+
 	private static char[][] convertBoardToCharArray() {
 		char[][] charBoard = {
 				{' ',' ',' ',' ',' ',' ',' ',' '},
@@ -151,7 +154,7 @@ public class ChezzAI {
 			int row = Integer.parseInt(piece.substring(3, 4)) - 1;
 			charBoard[row][column]= p;
 		}
-		
+
 		return charBoard;
 	}
 

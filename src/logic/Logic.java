@@ -1,31 +1,119 @@
 package logic;
 
+import java.util.Vector;
+
 public class Logic {
-	static byte[][] positionBoard = new byte[8][8];
-	public static String[] getAllPossibleMoves(String[] board) {
-		for(int i = 0; i<= 7; i++) {
-			for(int a = 0; a<=7; a++) {
-				for(int z = 1; z<= board.length; z++){
 
-					if((int)board[z].charAt(3) == 49 + a && (board[z].charAt(2) - 'a')-a == 0 ){
-						if(board[z].charAt(1) == 'b') {
-							positionBoard[i][a] = 1;
-							break;
-						} else {
-							positionBoard[i][a] = 2;
-							break;
-						}
 
-						} else {
+	public static String[] getAllPossibleMoves(String[] board, boolean isWhiteMove) {
+		Vector<String> moves = new Vector<String>();
+		byte[][] positionBoard = {
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0}};
 
-							positionBoard[i][a] = 0;
-							break;
-						}
+		for (String piece : board) {
+			int[] piecePosition = piecePositionStringToInt(piece);
+			if(piece.charAt(1) == 'w') {
+				positionBoard[piecePosition[0]][piecePosition[1]] = 1;
+			} else {
+				positionBoard[piecePosition[0]][piecePosition[1]] = 2;
+			}
+		}
+
+		for(String piece : board) {
+			int[] piecePosition = piecePositionStringToInt(piece);
+			String moveString = piecePositionIntToString(piecePosition)+" nach ";
+
+			switch(piece.charAt(0)) {
+			case 'p':
+				int direction;
+				int startRow;
+				moveString = "Bauer " + moveString;
+				if(isWhiteMove) {
+					direction = -1;
+					startRow = 6;
+				} else {
+					direction = 1;
+					startRow = 1;
 				}
-				System.out.println(positionBoard[i][a]);
 
+				if(piecePosition[1] + 1*direction < 8 && piecePosition[1] + 1*direction > 0 && positionBoard[piecePosition[0]][piecePosition[1] + 1*direction] == 0) {
+					moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0],piecePosition[1] + 1*direction}));
+					if(piecePosition[1] == startRow) {
+						if(positionBoard[piecePosition[0]][piecePosition[1] + 2*direction] == 0) {
+							moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0],piecePosition[1] + 2*direction}));
+						}
+					}
+				}
+				if(piecePosition[1] + 1*direction < 8 && piecePosition[1] + 1*direction > 0 &&
+						piecePosition[0] - 1 < 8 && piecePosition[0] - 1 > 0 &&
+						positionBoard[piecePosition[0] - 1][piecePosition[1] + 1*direction] == (isWhiteMove ? 2 : 1)) {
+					moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0] - 1,piecePosition[1] + 1*direction}));
+				}
+				if(piecePosition[1] + 1*direction < 8 && piecePosition[1] + 1*direction > 0 &&
+						piecePosition[0] + 1 < 8 && piecePosition[0] + 1 > 0 &&
+						positionBoard[piecePosition[0] + 1][piecePosition[1] + 1*direction] == (isWhiteMove ? 2 : 1)) {
+					moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0] + 1,piecePosition[1] + 1*direction}));
+				}
+				break;
+/*			case 'r':
+				for { // vorwärts und rückwärts || links oder rechts   1    -1
+					for {
+						// SPaltenbewegung
+					}
+
+					for {
+						// Reihenbewegung
+					}
+				}
+			case 'b':
+				for { // vorwärts und rückwärts || links oder rechts   1    -1
+					for {
+
+					}
+
+					for {
+
+					}
+				}
+			case 'q':
+			case 'k':
+				for {
+					for {
+						for {
+
+						}
+					}
+				}
+			case 'n':
+
+*/
 			}
 
 		}
+
+
+
+		return (String[]) moves.toArray();
 	}
+
+	public static String piecePositionIntToString(int[] piecePosition) {
+		return ""+(char)(piecePosition[0]+'a')+(char)(piecePosition[1]+1);
+	}
+
+	public static int[] piecePositionStringToInt(String piece) {
+		int[] piecePosition = new int[2];
+
+		piecePosition[0] = piece.charAt(2)-'a';
+		piecePosition[1] = piece.charAt(3) -1;
+
+		return piecePosition;
+	};
+
 }
