@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Vector;
 
 import logic.Logic;
 
@@ -22,14 +23,14 @@ public class ChezzAI {
 
 	static Random random;
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
 		//String[] moves = Logic.getAllPossibleMoves(board);
 		scanner = new Scanner(System.in);
 		random = new Random();
 
 		loadCommentary("res/commentary_de.txt");
 
-		System.out.println("Hallo,\ndies ist ein simpler Schachcomputer. Möchtest du ein Spiel spielen?");
+		/*System.out.println("Hallo,\ndies ist ein simpler Schachcomputer. Möchtest du ein Spiel spielen?");
 		switch(scanner.nextLine().toLowerCase()) {
 		case "ja":
 		case "j":
@@ -38,10 +39,13 @@ public class ChezzAI {
 		case "nein":
 		case "no":
 		case "n": System.out.println("Okay, vielleicht beim nächsten Mal. Tschüss!"); System.exit(0); break;
-		}
+		
+		}*/
+		
+		startGame();
 	}
 
-	static void startGame() {
+	static void startGame() throws InterruptedException {
 		boolean winner = false;
 		while(!winner) {
 			// User am Zug
@@ -56,24 +60,36 @@ public class ChezzAI {
 					System.err.println("[Error] Falsches Zugformat: <Figur> <Startposition> nach <Endposition>");
 					correctMove = false;
 				}
-				if(!processMove(move)) {
+				if(!processMove(move, true)) {
 					System.out.println("[Error] Du hast keinen gültigen Zug eingegeben");
 					correctMove = false;
 				}
 			}
+			
+			//Thread.sleep(2000);
 
 			// Computer am Zug
 			printBoard();
 			comment();
 			//moves
+			Vector<String> moves = Logic.getAllPossibleMoves(board, false);
 			//zufällig einen Zug daraus wählen
+			System.out.println(moves.size());
+			String[] m = moves.get(random.nextInt(moves.size())).split(" ");
+			for (String string : m) {
+				System.out.println(string);
+			}
+			processMove(m, false);
 			//processMove(move.split(" "));
 			//winner = true;
 		}
 	}
 
 	static void comment() {
-		System.out.println(commentary[random.nextInt(100) % commentary.length]);
+		String[] lines = commentary[random.nextInt(100) % commentary.length].split("\n");
+		for (String line : lines) {
+			System.out.println(line);
+		}
 	}
 
 	static void loadCommentary(String filename) throws FileNotFoundException {
@@ -87,24 +103,30 @@ public class ChezzAI {
 		commentary = sb.toString().split("___");
 	}
 
-	static boolean processMove(String[] move) {
-		String p = " ";
-		switch(move[0].toLowerCase()) {
-		case "bauer": p = "p"; break;
-		case "turm": p = "r"; break;
-		case "läufer": p = "b"; break;
-		case "springer": p = "n"; break;
-		case "dame": p = "q"; break;
-		case "könig": p = "k"; break;
-		}
-		boolean successfulMove = false;
-		for(int i = 0; i < board.length; i++) {
-			if(board[i].equals((p+"w"+move[1]))) {
-				board[i] = p+"w"+move[3];
-				successfulMove = true;
+	static boolean processMove(String[] move, boolean isWhiteMove) {
+		if(move.length == 4) {
+			String p = " ";
+			switch(move[0].toLowerCase()) {
+			case "bauer": p = "p"; break;
+			case "turm": p = "r"; break;
+			case "läufer": p = "b"; break;
+			case "springer": p = "n"; break;
+			case "dame": p = "q"; break;
+			case "könig": p = "k"; break;
 			}
+			boolean successfulMove = false;
+			String color = isWhiteMove ? "w" : "b";
+			System.out.println(p+color+move[1]);
+			System.out.println(p+color+move[3]);
+			for(int i = 0; i < board.length; i++) {
+				if(board[i].equals((p+color+move[1]))) {
+					board[i] = p+color+move[3];
+					successfulMove = true;
+				}
+			}
+			return successfulMove;
 		}
-		return successfulMove;
+		return false;
 	}
 
 	static void printBoard() {
