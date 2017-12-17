@@ -7,24 +7,7 @@ public class Logic {
 
 	public static Vector<String> getAllPossibleMoves(String[] board, boolean isWhiteMove) {
 		Vector<String> moves = new Vector<String>();
-		byte[][] positionBoard = {
-				{0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0}};
-
-		for (String piece : board) {
-			int[] piecePosition = piecePositionStringToInt(piece);
-			if(piece.charAt(1) == 'w') {
-				positionBoard[piecePosition[0]][piecePosition[1]] = 1;
-			} else {
-				positionBoard[piecePosition[0]][piecePosition[1]] = 2;
-			}
-		}
+		byte[][] positionBoard = createPositionBoard(board);
 
 		for(String piece : board) {
 			if(piece.charAt(1) == (isWhiteMove ? 'w' : 'b')) {
@@ -39,23 +22,31 @@ public class Logic {
 					moveString = "Bauer " + moveString;
 					if(isWhiteMove) {
 						direction = 1;
-						startRow = 6;
+						startRow = 1;
 					} else {
 						direction = -1;
-						startRow = 1;
+						startRow = 6;
 					}
-
-					if(piecePosition[1] + 1*direction < 8 && piecePosition[1] + 1*direction > 0 && positionBoard[piecePosition[0]][piecePosition[1] + 1*direction] == 0) {
+					
+					// vorwärts laufen
+					if(piecePosition[1] + 1*direction < 8 && piecePosition[1] + 1*direction > 0 && 
+							positionBoard[piecePosition[0]][piecePosition[1] + 1*direction] == 0) {
 						moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0],piecePosition[1] + 1*direction}));
+						// doppelt nach vorne laufen, wenn noch nicht bewegt
 						if(piecePosition[1] == startRow) {
 							if(positionBoard[piecePosition[0]][piecePosition[1] + 2*direction] == 0) {
 								moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0],piecePosition[1] + 2*direction}));
 							}
 						}
 					}
-					if(piecePosition[1] + 1*direction < 8 && piecePosition[1] + 1*direction > 0 && piecePosition[0] - 1 < 8 && piecePosition[0] - 1 > 0 && positionBoard[piecePosition[0] - 1][piecePosition[1] + 1*direction] == (isWhiteMove ? 2 : 1)) {
+					
+					// schräg schlagen
+					if(piecePosition[1] + 1*direction < 8 && piecePosition[1] + 1*direction > 0 && 
+							piecePosition[0] - 1 < 8 && piecePosition[0] - 1 > 0 && 
+							positionBoard[piecePosition[0] - 1][piecePosition[1] + 1*direction] == (isWhiteMove ? 2 : 1)) {
 						moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0] - 1,piecePosition[1] + 1*direction}));
 					}
+					// schräg schlagen
 					if(piecePosition[1] + 1*direction < 8 && piecePosition[1] + 1*direction > 0 &&
 							piecePosition[0] + 1 < 8 && piecePosition[0] + 1 > 0 &&
 							positionBoard[piecePosition[0] + 1][piecePosition[1] + 1*direction] == (isWhiteMove ? 2 : 1)) {
@@ -102,6 +93,29 @@ public class Logic {
 			System.out.println(string);
 		}
 		return moves;
+	}
+	
+	private static byte[][] createPositionBoard(String[] board) {
+		byte[][] positionBoard = {
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0}};
+		
+		for (String piece : board) {
+			int[] piecePosition = piecePositionStringToInt(piece);
+			if(piece.charAt(1) == 'w') {
+				positionBoard[piecePosition[0]][piecePosition[1]] = 1;
+			} else {
+				positionBoard[piecePosition[0]][piecePosition[1]] = 2;
+			}
+		}
+		
+		return positionBoard;
 	}
 
 	public static String piecePositionIntToString(int[] piecePosition) {
