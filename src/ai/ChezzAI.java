@@ -1,6 +1,5 @@
 package ai;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Random;
@@ -74,11 +73,10 @@ public class ChezzAI {
 			//moves
 			Vector<String> moves = Logic.getAllPossibleMoves(board, false);
 			//zufällig einen Zug daraus wählen
-			System.out.println(moves.size());
 			String[] m = moves.get(random.nextInt(moves.size())).split(" ");
-			for (String string : m) {
+			/*for (String string : board) {
 				System.out.println(string);
-			}
+			}*/
 			processMove(m, false);
 			//processMove(move.split(" "));
 			//winner = true;
@@ -102,6 +100,38 @@ public class ChezzAI {
 		in.close();
 		commentary = sb.toString().split("___");
 	}
+	
+	private static void printBoardString() {
+		String string = "";
+		for(int i=0; i<board.length; i++) {
+			string += board[i] + " ";
+		}
+		System.out.println(string);
+	}
+	
+	private static void removePiece(String piece) {
+		String[] newBoard = new String[board.length - 1];
+		boolean pieceFound = false;
+		for(int i = 0; i < board.length; i++) {
+			if(board[i].equals(piece)) {
+				pieceFound = true;
+				continue;
+			}
+			if(i == (board.length - 1) && !pieceFound) {
+				break;
+			}
+			if(!board[i].equals(piece)) {
+				if(pieceFound) {
+					newBoard[i - 1] = board[i];					
+				} else {
+					newBoard[i] = board[i];	
+				}
+			}
+		}
+		if(pieceFound) {
+			board = newBoard;
+		}
+	}
 
 	static boolean processMove(String[] move, boolean isWhiteMove) {
 		if(move.length == 4) {
@@ -116,12 +146,17 @@ public class ChezzAI {
 			}
 			boolean successfulMove = false;
 			String color = isWhiteMove ? "w" : "b";
+			String antiColor = isWhiteMove ? "b" : "w";
+			System.out.println("####");
 			System.out.println(p+color+move[1]);
 			System.out.println(p+color+move[3]);
-			for(int i = 0; i < board.length; i++) {
-				if(board[i].equals((p+color+move[1]))) {
-					board[i] = p+color+move[3];
+			System.out.println("####");
+			for(int pieceIndex = 0; pieceIndex < board.length; pieceIndex++) {
+				if(board[pieceIndex].equals(p+color+move[1])) {
+					board[pieceIndex] = p+color+move[3];
 					successfulMove = true;
+					removePiece(p+antiColor+move[3]);
+					break;
 				}
 			}
 			return successfulMove;
@@ -166,9 +201,12 @@ public class ChezzAI {
 				{' ',' ',' ',' ',' ',' ',' ',' '},
 				{' ',' ',' ',' ',' ',' ',' ',' '},
 				{' ',' ',' ',' ',' ',' ',' ',' '}};
+		printBoardString();
 		for (String piece : board) {
 			char p = piece.charAt(0);
 			if(piece.charAt(1) == 'w') {
+				System.out.println("Test:");
+				System.out.println(piece);
 				p = Character.toUpperCase(p);
 			}
 			char c = piece.charAt(2);
@@ -176,8 +214,14 @@ public class ChezzAI {
 			int row = Integer.parseInt(piece.substring(3, 4)) - 1;
 			charBoard[row][column]= p;
 		}
-
+		System.out.println("___________________________________");
+		for(int i = 0; i < charBoard.length; i++) {
+			for(int j = 0; j < charBoard[i].length; j++) {
+				System.out.print(charBoard[7-i][j]);
+			}
+			System.out.println();
+		}
+		System.out.println("___________________________________");
 		return charBoard;
 	}
-
 }
