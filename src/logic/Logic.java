@@ -13,6 +13,8 @@ public class Logic {
 			if(piece.charAt(1) == (isWhiteMove ? 'w' : 'b')) {
 				int[] piecePosition = piecePositionStringToInt(piece);
 				String moveString = piecePositionIntToString(piecePosition)+" nach ";
+				
+				int[][] possibleMoves;
 
 				switch(piece.charAt(0)) {
 				case 'p':
@@ -77,6 +79,7 @@ public class Logic {
 							}
 						}
 					}
+					break;
 				case 'b':
 					moveString = "Läufer " + moveString;
 					for (int i = -1; i < 2; i += 2) { // vorwärts und rückwärts || links oder rechts   1    -1
@@ -106,6 +109,7 @@ public class Logic {
 							}
 						}
 					}
+					break;
 				case 'q':
 					moveString = "Dame " + moveString;
 					
@@ -166,17 +170,26 @@ public class Logic {
 							}
 						}
 					}
-	/*			case 'k':
-					for {
-						for {
-							for {
-
-							}
+					break;
+				case 'k':
+					moveString = "König " + moveString;
+					
+					possibleMoves = new int[][]{{-1,-1},{-1,0},{-1,1},{1,-1},{1,0},{1,1},{0,-1},{0,1}};
+					for (int[] move : possibleMoves) {
+						if(isValidPosition(piecePosition, move[0], move[1]) && positionBoard[piecePosition[0] + move[0]][piecePosition[0] + move[1]] != (isWhiteMove ? 1 : 2)) {
+							moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0] + move[0],piecePosition[1] + move[1]}));
 						}
 					}
-	/*			case 'n':
-
-	*/
+					break;
+				case 'n':
+					moveString = "Springer " + moveString;
+					possibleMoves = new int[][]{{-1,2},{-1,-2},{1,2},{1,-2},{2,1},{2,-1},{-2,-1},{-2,1}};
+					for (int[] move : possibleMoves) {
+						if(isValidPosition(piecePosition, move[0], move[1]) && positionBoard[piecePosition[0] + move[0]][piecePosition[0] + move[1]] != (isWhiteMove ? 1 : 2)) {
+							moves.add(moveString + piecePositionIntToString(new int[]{piecePosition[0] + move[0],piecePosition[1] + move[1]}));
+						}
+					}
+					break;
 				}
 
 			}
